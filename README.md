@@ -12,13 +12,12 @@ go install .
 
 ## Deploy
 
-First, we're going to use an AWS KMS asymmetric key as the private key for our certificate authority. Look at key.yml for an example KMS key to create.
+First, we're going to use an AWS KMS asymmetric key as the private key for our certificate authority. Look at `kms.yml` for an example KMS key to create.
 
 ```bash
 aws cloudformation deploy \
-    --template-file ./key.yml \
-    --stack-name openrolesanywhere-kms \
-    --capabilities CAPABILITY_IAM
+    --template-file ./kms.yml \
+    --stack-name openrolesanywhere-kms
 ```
 
 Once you have the key ARN, we run the following command. It will create a new self-signed certificate (using the private key stored in KMS) and register it in Roles Anywhere as a trust anchor. 
@@ -42,9 +41,14 @@ openrolesanywhere admin create-ca \
 Next, we create a profile. As best I can tell, this is a mapping from trust anchors to IAM roles.
 
 ```bash
+aws cloudformation deploy \
+    --template-file ./role.yml \
+    --stack-name openrolesanywhere-role \
+    --capabilities CAPABILITY_IAM
+
 # arn:aws:iam::012345678912:role/SomeRoleName
 S3_EXAMPLE_ROLE=$(aws cloudformation describe-stacks \
-    --stack-name "openrolesanywhere-kms" \
+    --stack-name "openrolesanywhere-role" \
     --query 'Stacks[0].Outputs[?OutputKey==`RoleExampleArn`].OutputValue' \
     --output text)
 
