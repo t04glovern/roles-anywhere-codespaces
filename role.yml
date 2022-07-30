@@ -1,5 +1,5 @@
 Resources:
-  RoleExample:
+  CodespacesRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -15,7 +15,7 @@ Resources:
               - sts:TagSession
       Path: /
       Policies:
-        - PolicyName: openrolesanywhere-s3-access
+        - PolicyName: s3-access
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -27,5 +27,5 @@ Resources:
           Value: true
 
 Outputs:
-  RoleExampleArn:
-    Value: !GetAtt RoleExample.Arn
+  RoleArn:
+    Value: !GetAtt CodespacesRole.Arn
