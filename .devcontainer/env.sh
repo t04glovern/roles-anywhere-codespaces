@@ -8,9 +8,15 @@ git clone https://github.com/aidansteele/openrolesanywhere.git /tmp/openrolesany
 cd /tmp/openrolesanywhere/cmd/openrolesanywhere
 go install .
 
-if ([ -z "${ROLES_ANYWHERE_PRIVATE_KEY}" ] && [ -z "${ROLES_ANYWHERE_ROLE}" ]); then
-  echo "ROLES_ANYWHERE_PRIVATE_KEY or ROLES_ANYWHERE_ROLE are undefined - skipping AWS auth setup within Codespaces"
+if ([ -z "${ROLES_ANYWHERE_PRIVATE_KEY}" ] && [ -z "${ROLES_ANYWHERE_ROLE}" ] && [ -z "${SSH_SIGNING_KEY}" ]); then
+  echo "ROLES_ANYWHERE_PRIVATE_KEY, ROLES_ANYWHERE_ROLE or SSH_SIGNING_KEY are undefined - skipping AWS auth setup within Codespaces"
 else
+  # Setup SSH Signing key
+  mkdir -p ~/.ssh
+  printenv 'SSH_SIGNING_KEY' > ~/.ssh/id_ed25519
+  eval "$(ssh-agent -s)"
+  ssh-add ~/.ssh/id_ed25519
+
   # Setup openrolesanywhere config
   mkdir -p ~/.config/openrolesanywhere
   printenv 'ROLES_ANYWHERE_PRIVATE_KEY' > ~/.config/openrolesanywhere/codespaces.pem
