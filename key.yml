@@ -1,0 +1,50 @@
+Resources:
+  Key:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: openrolesanywhere CA
+      KeySpec: ECC_NIST_P256
+      KeyUsage: SIGN_VERIFY
+      KeyPolicy:
+        Version: "2012-10-17"
+        Id: key-policy
+        Statement:
+          - Sid: AllowIAM
+            Effect: Allow
+            Action: kms:*
+            Resource: "*"
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+      Tags:
+        - Key: openrolesanywhere
+          Value: true
+
+  RoleExample:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - rolesanywhere.amazonaws.com
+            Action: 
+              - sts:AssumeRole
+              - sts:SetSourceIdentity
+              - sts:TagSession
+      Path: /
+      Policies:
+        - PolicyName: openrolesanywhere-s3-access
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: s3:*
+                Resource: "*"
+
+Outputs:
+  KeyId:
+    Value: !GetAtt Key.KeyId
+  RoleExampleArn:
+    Value: !GetAtt RoleExample.Arn
