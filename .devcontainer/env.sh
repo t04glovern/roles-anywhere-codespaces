@@ -4,6 +4,9 @@ set -x
 set -e
 
 # Install openrolesanywhere client
+if [ -e /tmp/openrolesanywhere ];
+  then rm -rf /tmp/openrolesanywhere;
+fi
 git clone https://github.com/aidansteele/openrolesanywhere.git /tmp/openrolesanywhere
 cd /tmp/openrolesanywhere/cmd/openrolesanywhere
 go install .
@@ -13,9 +16,9 @@ if ([ -z "${ROLES_ANYWHERE_PRIVATE_KEY}" ] && [ -z "${ROLES_ANYWHERE_ROLE}" ] &&
 else
   # Setup SSH Signing key
   mkdir -p ~/.ssh
-  printenv 'SSH_SIGNING_KEY' > ~/.ssh/id_ed25519
-  eval "$(ssh-agent -s)"
-  ssh-add ~/.ssh/id_ed25519
+  printenv 'SSH_SIGNING_KEY' > ~/.ssh/id_rsa
+  chmod 400 ~/.ssh/id_rsa
+  echo "eval $(keychain --eval --quiet id_rsa)" >> ~/.bash_profile
 
   # Setup openrolesanywhere config
   mkdir -p ~/.config/openrolesanywhere

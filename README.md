@@ -61,23 +61,23 @@ openrolesanywhere admin create-profile \
 Create a new SSH key to use for this example
 
 ```bash
-ssh-keygen -t ed25519 -C "your_email@example.com"
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 # Press ENTER a bunch
-ssh-add ~/.ssh/id_ed25519
+ssh-add ~/.ssh/id_rsa
 ```
 
 Now we can start requesting certificates. First run `ssh-add -l` to get a list of fingerprints for the keys stored in your SSH agent. Mine looks like this:
 
 ```bash
 $ ssh-add -l
-# 256 SHA256:nxRD66QQrwlpcoSLie3NP1PdIwnUy4flj9Uh/wr023w your_email@example.com (ED25519)
+# 4096 SHA256:dxzQKbZvcaQkOpJ55YbZ+1/aWENrgBb8zZIkxl5BRGE your_email@example.com (RSA)
 ```
 
 I want to use that second key, so I'll run the following command:
 
 ```bash
 openrolesanywhere request-certificate \
-    --ssh-fingerprint SHA256:nxRD66QQrwlpcoSLie3NP1PdIwnUy4flj9Uh/wr023w > ./publickey.pem
+    --ssh-fingerprint SHA256:dxzQKbZvcaQkOpJ55YbZ+1/aWENrgBb8zZIkxl5BRGE > ./publickey.pem
 ```
 
 Now we can send that to our administrator (which is probably us) and they will run:
@@ -102,3 +102,19 @@ region = us-east-1
 ```
 
 Now running `aws sts get-caller-identity` will work!
+
+## Setup GitHub Codespace
+
+Create the following GitHub repository secrets
+
+```bash
+ROLES_ANYWHERE_PRIVATE_KEY # Private key returned to you by CA
+ROLES_ANYWHERE_ROLE # Role created for use in Codespaces
+SSH_SIGNING_KEY # SSH key that was used to request the roles anywhere private key
+```
+
+When your codespace starts up, run any AWS commands you want
+
+```bash
+aws s3 ls
+```
