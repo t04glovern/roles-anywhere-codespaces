@@ -22,6 +22,8 @@ else
   printenv 'SSH_PRIVATE_SIGNING_KEY' > ~/.ssh/id_rsa_codespaces
   chmod 400 ~/.ssh/id_rsa_codespaces
   ssh-keygen -y -f ~/.ssh/id_rsa_codespaces > ~/.ssh/id_rsa_codespaces.pub
+  echo 'eval "$(ssh-agent -s)"' >> ~/.bashrc
+  echo 'ssh-add ~/.ssh/id_rsa_codespaces' >> ~/.bashrc
 
   # Setup openrolesanywhere config
   mkdir -p ~/.config/openrolesanywhere
@@ -31,7 +33,7 @@ else
   mkdir -p ~/.aws
   tee ~/.aws/config << END
 [profile default]
-credential_process = eval $(keychain --eval --quiet id_rsa_codespaces) && openrolesanywhere credential-process --name codespaces --role-arn $ROLES_ANYWHERE_ROLE
+credential_process = openrolesanywhere credential-process --name codespaces --role-arn $ROLES_ANYWHERE_ROLE
 region = us-east-1
 END
 fi

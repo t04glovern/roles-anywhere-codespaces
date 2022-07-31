@@ -98,7 +98,7 @@ Once they've done that, they can now configure the AWS CLI and SDKs to use it to
 
 ```bash
 [profile default]
-credential_process = eval $(keychain --eval --quiet id_rsa_codespaces) && openrolesanywhere credential-process --name codespaces --role-arn arn:aws:iam::012345678912:role/SomeRoleName
+credential_process = openrolesanywhere credential-process --name codespaces --role-arn arn:aws:iam::012345678912:role/roles-anywhere-codespaces-example
 region = us-east-1
 ```
 
