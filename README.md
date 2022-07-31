@@ -117,5 +117,5 @@ SSH_PRIVATE_SIGNING_KEY # SSH key that was used to sign requests to roles anywhe
 When your codespace starts up, run any AWS commands you want
 
 ```bash
-aws s3 ls
+aws s3 mb s3://roles-anywhere-codespaces-example
 ```
