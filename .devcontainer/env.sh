@@ -21,7 +21,7 @@ else
   fi
   printenv 'SSH_SIGNING_KEY' > ~/.ssh/id_rsa
   chmod 400 ~/.ssh/id_rsa
-  echo "eval $(keychain --eval --quiet id_rsa)" >> ~/.bash_profile
+  ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
 
   # Setup openrolesanywhere config
   mkdir -p ~/.config/openrolesanywhere
@@ -29,9 +29,9 @@ else
 
   # Setup AWS config
   mkdir -p ~/.aws
-  tee -a ~/.aws/config << END
+  tee ~/.aws/config << END
 [profile default]
-credential_process = openrolesanywhere credential-process --name codespaces --role-arn $ROLES_ANYWHERE_ROLE
+credential_process = eval $(keychain --eval --quiet id_rsa) && openrolesanywhere credential-process --name codespaces --role-arn $ROLES_ANYWHERE_ROLE
 region = us-east-1
 END
 fi
