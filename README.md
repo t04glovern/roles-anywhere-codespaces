@@ -44,10 +44,11 @@ aws cloudformation deploy \
     --region us-east-1 \
     --template-file ./role.yml \
     --stack-name openrolesanywhere-role \
-    --capabilities CAPABILITY_IAM
+    --capabilities CAPABILITY_NAMED_IAM
 
-# arn:aws:iam::012345678912:role/SomeRoleName
+# arn:aws:iam::012345678912:role/roles-anywhere-codespaces-example
 S3_EXAMPLE_ROLE=$(aws cloudformation describe-stacks \
+    --region us-east-1 \
     --stack-name "openrolesanywhere-role" \
     --query 'Stacks[0].Outputs[?OutputKey==`RoleArn`].OutputValue' \
     --output text)

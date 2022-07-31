@@ -2,6 +2,7 @@ Resources:
   CodespacesRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: roles-anywhere-codespaces-example
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -20,11 +21,20 @@ Resources:
             Version: 2012-10-17
             Statement:
               - Effect: Allow
-                Action: s3:*
-                Resource: "*"
+                Action:
+                  - s3:CreateBucket
+                  - s3:DeleteBucket
+                  - s3:DeleteObject
+                  - s3:ListBucket
+                  - s3:PutObject
+                  - s3:PutObjectAcl
+                  - s3:GetObject
+                Resource:
+                  - arn:aws:s3:::roles-anywhere-codespaces-example/*
+                  - arn:aws:s3:::roles-anywhere-codespaces-example
                 Condition:
-                  - StringEquals:
-                      aws:PrincipalTag/x509Subject/CN: Codespaces
+                  StringEquals:
+                    aws:PrincipalTag/x509Subject/CN: Codespaces
       Tags:
         - Key: openrolesanywhere
           Value: true
