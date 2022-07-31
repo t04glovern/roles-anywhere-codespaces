@@ -58,46 +58,46 @@ openrolesanywhere admin create-profile \
     --role-arn $S3_EXAMPLE_ROLE
 ```
 
-Create a new SSH key to use for this example
+Create a new SSH private key to use for this example
 
 ```bash
 ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 # Press ENTER a bunch
-ssh-add ~/.ssh/id_rsa
+ssh-add ~/.ssh/id_rsa_codespaces
 ```
 
-Now we can start requesting certificates. First run `ssh-add -l` to get a list of fingerprints for the keys stored in your SSH agent. Mine looks like this:
+Run `ssh-add -l` to get a list of fingerprints for the keys stored in your SSH agent. Mine looks like this:
 
 ```bash
 $ ssh-add -l
 # 4096 SHA256:dxzQKbZvcaQkOpJ55YbZ+1/aWENrgBb8zZIkxl5BRGE your_email@example.com (RSA)
 ```
 
-I want to use that second key, so I'll run the following command:
+I want to use that second key, so I'll run the following command to generate a certificate request
 
 ```bash
 openrolesanywhere request-certificate \
-    --ssh-fingerprint SHA256:dxzQKbZvcaQkOpJ55YbZ+1/aWENrgBb8zZIkxl5BRGE > ./publickey.pem
+    --ssh-fingerprint SHA256:dxzQKbZvcaQkOpJ55YbZ+1/aWENrgBb8zZIkxl5BRGE > ./key.csr
 ```
 
-Now we can send that to our administrator (which is probably us) and they will run:
+Now we can send that CSR to our administrator (which is probably us in this example) and they will run the following command to generate a certicate for us to use with Roles Anywhere.
 
 ```bash
 openrolesanywhere admin accept-request \
-    --request-file ./publickey.pem \
+    --request-file ./key.csr \
     --validity-duration 8760h \
     --serial-number 2 \
     --common-name Codespaces \
     --organization DevOpStar > codespaces.pem
 ```
 
-This will create a file called `codespaces.pem`. We tell the end-user (again, probably ourselves) to store that file in `~/.config/openrolesanywhere/codespaces.pem`. 
+This creates a file called `codespaces.pem`, which is our public certificate. We tell the end-user (again, probably ourselves in this scenario) to store that file in `~/.config/openrolesanywhere/codespaces.pem`. 
 
 Once they've done that, they can now configure the AWS CLI and SDKs to use it to retrieve AWS credentials. To do that, the end-user adds this to their `~/.aws/config`:
 
 ```bash
 [profile default]
-credential_process = eval $(keychain --eval --quiet id_rsa) && openrolesanywhere credential-process --name codespaces --role-arn arn:aws:iam::012345678912:role/SomeRoleName
+credential_process = eval $(keychain --eval --quiet id_rsa_codespaces) && openrolesanywhere credential-process --name codespaces --role-arn arn:aws:iam::012345678912:role/SomeRoleName
 region = us-east-1
 ```
 
@@ -108,9 +108,9 @@ Now running `aws sts get-caller-identity` will work!
 Create the following GitHub repository secrets
 
 ```bash
-ROLES_ANYWHERE_PRIVATE_KEY # Private key returned to you by CA
+ROLES_ANYWHERE_CERTIFICATE # Public certificate for Roles Anywhere
 ROLES_ANYWHERE_ROLE # Role created for use in Codespaces
-SSH_SIGNING_KEY # SSH key that was used to request the roles anywhere private key
+SSH_PRIVATE_SIGNING_KEY # SSH key that was used to sign requests to roles anywhere
 ```
 
 When your codespace starts up, run any AWS commands you want

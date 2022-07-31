@@ -22,6 +22,9 @@ Resources:
               - Effect: Allow
                 Action: s3:*
                 Resource: "*"
+                Condition:
+                  - StringEquals:
+                      aws:PrincipalTag/x509Subject/CN: Codespaces
       Tags:
         - Key: openrolesanywhere
           Value: true
