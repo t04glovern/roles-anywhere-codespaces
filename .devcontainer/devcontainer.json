@@ -19,6 +19,7 @@
 	"features": {
 		"git": "os-provided",
 		"aws-cli": "latest",
-		"golang": "latest"
+		"golang": "latest",
+		"sshd": "latest"
 	}
 }

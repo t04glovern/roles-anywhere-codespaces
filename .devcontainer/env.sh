@@ -16,6 +16,9 @@ if ([ -z "${ROLES_ANYWHERE_PRIVATE_KEY}" ] && [ -z "${ROLES_ANYWHERE_ROLE}" ] &&
 else
   # Setup SSH Signing key
   mkdir -p ~/.ssh
+  if [ -e ~/.ssh/id_rsa ];
+    then rm -rf ~/.ssh/id_rsa;
+  fi
   printenv 'SSH_SIGNING_KEY' > ~/.ssh/id_rsa
   chmod 400 ~/.ssh/id_rsa
   echo "eval $(keychain --eval --quiet id_rsa)" >> ~/.bash_profile
