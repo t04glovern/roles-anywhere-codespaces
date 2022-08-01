@@ -22,18 +22,24 @@ else
   printenv 'SSH_PRIVATE_SIGNING_KEY' > ~/.ssh/id_rsa_codespaces
   chmod 400 ~/.ssh/id_rsa_codespaces
   ssh-keygen -y -f ~/.ssh/id_rsa_codespaces > ~/.ssh/id_rsa_codespaces.pub
-  echo 'eval "$(ssh-agent -s)"' >> ~/.bashrc
-  echo 'ssh-add ~/.ssh/id_rsa_codespaces' >> ~/.bashrc
 
   # Setup openrolesanywhere config
   mkdir -p ~/.config/openrolesanywhere
   printenv 'ROLES_ANYWHERE_CERTIFICATE' > ~/.config/openrolesanywhere/codespaces.pem
 
+  # Create credential handler for AWS credential_process
+  sudo tee /opt/roles-anywhere-handler << END
+#!/bin/bash
+eval "\$(ssh-agent -s)" > /dev/null
+ssh-add ~/.ssh/id_rsa_codespaces > /dev/null
+openrolesanywhere credential-process --name codespaces --role-arn $ROLES_ANYWHERE_ROLE
+END
+
   # Setup AWS config
   mkdir -p ~/.aws
   tee ~/.aws/config << END
 [profile default]
-credential_process = openrolesanywhere credential-process --name codespaces --role-arn $ROLES_ANYWHERE_ROLE
+credential_process = /opt/roles-anywhere-handler
 region = us-east-1
 END
 fi
