@@ -92,7 +92,7 @@ openrolesanywhere admin accept-request \
     --organization DevOpStar > codespaces.pem
 ```
 
-This creates a file called `codespaces.pem`, which is our public certificate. We tell the end-user (again, probably ourselves in this scenario) to store that file in `~/.config/openrolesanywhere/codespaces.pem`. 
+This creates a file called `codespaces.pem`, which is our public certificate. We tell the end-user (again, probably ourselves in this scenario) to store that file in `~/.config/openrolesanywhere/codespaces.pem`.
 
 Once they've done that, they can now configure the AWS CLI and SDKs to use it to retrieve AWS credentials. To do that, the end-user adds this to their `~/.aws/config`:
 
